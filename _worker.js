@@ -77,16 +77,17 @@ export default {
                         // 访客访问：只渲染安全、去除了编辑功能的纯净展示页
                         return new Response(renderGuestPage(url, 访客订阅), { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
                     } else {
-						const isLoggedIn = await isAdminLoggedIn(request, env, mytoken);
-						if (!isLoggedIn) {
-							if (request.method === 'POST') return await handleAdminLogin(request, env, url, mytoken);
-							const loginMessage = (!env.USER || !env.PASS) ? '请先在 Cloudflare 环境变量中配置 USER 和 PASS' : '';
-							return new Response(renderLoginPage(url, loginMessage), {
-								headers: {
-									'Content-Type': 'text/html;charset=utf-8',
-									'Cache-Control': 'no-store',
-								},
-							});
+						if (isAdminLoginEnabled(env)) {
+							const isLoggedIn = await isAdminLoggedIn(request, env, mytoken);
+							if (!isLoggedIn) {
+								if (request.method === 'POST') return await handleAdminLogin(request, env, url, mytoken);
+								return new Response(renderLoginPage(url), {
+									headers: {
+										'Content-Type': 'text/html;charset=utf-8',
+										'Cache-Control': 'no-store',
+									},
+								});
+							}
 						}
                         // 管理员访问：渲染拥有完整管理权限的KV编辑面板
 					    await sendMessage(`#编辑订阅 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgentHeader}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
@@ -518,8 +519,12 @@ function escapeHTML(text = '') {
 }
 
 async function getAdminSessionValue(env, token) {
-	if (!env.USER || !env.PASS) return '';
+	if (!isAdminLoginEnabled(env)) return '';
 	return await MD5MD5(`${env.USER}:${env.PASS}:${token}:admin-login`);
+}
+
+function isAdminLoginEnabled(env) {
+	return !!(env.USER && env.PASS);
 }
 
 async function isAdminLoggedIn(request, env, token) {
@@ -543,16 +548,6 @@ async function handleAdminLogin(request, env, url, token) {
 	} catch (error) {
 		return new Response(renderLoginPage(url, '登录请求格式不正确'), {
 			status: 400,
-			headers: {
-				'Content-Type': 'text/html;charset=utf-8',
-				'Cache-Control': 'no-store',
-			},
-		});
-	}
-
-	if (!env.USER || !env.PASS) {
-		return new Response(renderLoginPage(url, '请先在 Cloudflare 环境变量中配置 USER 和 PASS'), {
-			status: 500,
 			headers: {
 				'Content-Type': 'text/html;charset=utf-8',
 				'Cache-Control': 'no-store',
