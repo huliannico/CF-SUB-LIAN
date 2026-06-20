@@ -47,13 +47,17 @@ export default {
 		guestToken = env.GUESTTOKEN || env.GUEST || guestToken;
 		if (!guestToken) guestToken = await MD5MD5(mytoken);
 		const 访客订阅 = guestToken;
+        
+        // 判定当前访问路径是否为访客专属路径
+        const guestPath = url.pathname === ("/" + 访客订阅) || url.pathname.toLowerCase() === ("/" + 访客订阅.toLowerCase());
 
 		let UD = Math.floor(((timestamp - Date.now()) / timestamp * total * 1099511627776) / 2);
 		total = total * 1099511627776;
 		let expire = Math.floor(timestamp / 1000);
 		SUBUpdateTime = env.SUBUPTIME || SUBUpdateTime;
 
-		if (!([mytoken, fakeToken, 访客订阅].includes(token) || url.pathname == ("/" + mytoken) || url.pathname.includes("/" + mytoken + "?"))) {
+        // 如果路径既不是管理员，也不是访客，则拦截
+		if (!([mytoken, fakeToken, 访客订阅].includes(token) || url.pathname == ("/" + mytoken) || url.pathname.includes("/" + mytoken + "?") || guestPath)) {
 			if (TG == 1 && url.pathname !== "/" && url.pathname !== "/favicon.ico") await sendMessage(`#异常访问 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgent}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
 			if (env.URL302) return Response.redirect(env.URL302, 302);
 			else if (env.URL) return await proxyURL(env.URL, url);
@@ -66,9 +70,16 @@ export default {
 		} else {
 			if (env.KV) {
 				await 迁移地址列表(env, 'LINK.txt');
+                // 浏览器直接访问且不带转换参数时的UI分流逻辑
 				if (userAgent.includes('mozilla') && !url.search) {
-					await sendMessage(`#编辑订阅 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgentHeader}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
-					return await KV(request, env, 'LINK.txt', 访客订阅);
+                    if (guestPath) {
+                        // 访客访问：只渲染安全、去除了编辑功能的纯净展示页
+                        return new Response(renderGuestPage(url, 访客订阅), { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+                    } else {
+                        // 管理员访问：渲染拥有完整管理权限的KV编辑面板
+					    await sendMessage(`#编辑订阅 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgentHeader}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
+					    return await KV(request, env, 'LINK.txt', 访客订阅);
+                    }
 				} else {
 					MainData = await env.KV.get('LINK.txt') || MainData;
 				}
@@ -148,9 +159,7 @@ export default {
 			let adKeywords = [];
 			let filteredLines = text.split('\n');
 
-			// 如果 Cloudflare 环境变量中配置了 NOADS，才开启过滤
 			if (env.NOADS) {
-				// 支持英文逗号或换行符分割，去除前后空格，转为小写，并过滤掉空行
 				adKeywords = env.NOADS.split(/,|\r?\n/)
 					.map(k => k.trim().toLowerCase())
 					.filter(k => k.length > 0);
@@ -163,7 +172,6 @@ export default {
 				}
 			}
 
-			// 去重
 			const uniqueLines = new Set(filteredLines);
 			const result = [...uniqueLines].join('\n');
 			// ===================================================================
@@ -475,6 +483,76 @@ async function 迁移地址列表(env, txt = 'ADD.txt') {
 	}
 	return false;
 }
+
+// ================= 新增：专属访客展示页渲染函数 =================
+function renderGuestPage(url, guest) {
+    return `
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>访客订阅面板 - ${FileName}</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                body {
+                    margin: 0;
+                    padding: 15px; 
+                    box-sizing: border-box;
+                    font-size: 13px; 
+                }
+            </style>
+            <script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
+        </head>
+        <body>
+            ################################################################<br>
+            【访客专区】Subscribe / sub 订阅地址<br>
+            点击链接自动 <strong>复制订阅链接</strong> 并 <strong>生成订阅二维码</strong> <br>
+            ---------------------------------------------------------------<br>
+            自适应订阅地址:<br>
+            <a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}','guest_0')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}</a><br>
+            <div id="guest_0" style="margin: 10px 10px 10px 10px;"></div>
+            Base64订阅地址:<br>
+            <a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&b64','guest_1')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&b64</a><br>
+            <div id="guest_1" style="margin: 10px 10px 10px 10px;"></div>
+            clash订阅地址:<br>
+            <a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&clash','guest_2')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&clash</a><br>
+            <div id="guest_2" style="margin: 10px 10px 10px 10px;"></div>
+            singbox订阅地址:<br>
+            <a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&sb','guest_3')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&sb</a><br>
+            <div id="guest_3" style="margin: 10px 10px 10px 10px;"></div>
+            surge订阅地址:<br>
+            <a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&surge','guest_4')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&surge</a><br>
+            <div id="guest_4" style="margin: 10px 10px 10px 10px;"></div>
+            loon订阅地址:<br>
+            <a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&loon','guest_5')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&loon</a><br>
+            <div id="guest_5" style="margin: 10px 10px 10px 10px;"></div>
+            ---------------------------------------------------------------<br>
+            ################################################################<br>
+            <script>
+            function copyToClipboard(text, qrcode) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('已复制到剪贴板');
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                });
+                const qrcodeDiv = document.getElementById(qrcode);
+                qrcodeDiv.innerHTML = '';
+                new QRCode(qrcodeDiv, {
+                    text: text,
+                    width: 220, 
+                    height: 220, 
+                    colorDark: "#000000", 
+                    colorLight: "#ffffff", 
+                    correctLevel: QRCode.CorrectLevel.Q, 
+                    scale: 1 
+                });
+            }
+            </script>
+        </body>
+    </html>
+    `;
+}
+// =================================================================
 
 async function KV(request, env, txt = 'ADD.txt', guest) {
 	const url = new URL(request.url);
