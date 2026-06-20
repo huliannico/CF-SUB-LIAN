@@ -1048,7 +1048,7 @@ function renderAdminPage(url, content, hasKV, guest, request) {
 				<section class="panel">
 					<h2 class="section-title">汇聚订阅编辑</h2>
 					${hasKV ? `
-						<textarea id="content"></textarea>
+						<textarea id="content">${escapeHTML(content)}</textarea>
 						<div class="actions">
 							<button type="button" onclick="saveContent(this)">保存</button>
 							<span id="saveStatus" class="muted"></span>
