@@ -583,11 +583,12 @@ function getToolStyles() {
 		}
 		body {
 			margin: 0;
-			background: #f7f7f5;
+			background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 			color: #202124;
-			font-family: Arial, sans-serif;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 			font-size: 14px;
 			line-height: 1.5;
+			min-height: 100vh;
 		}
 		.page {
 			width: 100%;
@@ -600,75 +601,103 @@ function getToolStyles() {
 		}
 		.title {
 			margin: 0;
-			font-size: 22px;
+			font-size: 28px;
 			font-weight: 700;
 			line-height: 1.2;
+			color: #1a1a1a;
 		}
 		.subtitle {
-			margin-top: 5px;
+			margin-top: 8px;
 			color: #666;
 			font-size: 13px;
 		}
 		.panel {
-			background: #fff;
-			border: 1px solid #deded8;
-			border-radius: 8px;
-			padding: 14px;
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(20px);
+			-webkit-backdrop-filter: blur(20px);
+			border: 1px solid rgba(255, 255, 255, 0.5);
+			border-radius: 20px;
+			padding: 16px;
 			margin-top: 12px;
+			box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 		}
 		.section-title {
 			margin: 0 0 10px;
 			font-size: 15px;
 			font-weight: 700;
 		}
+		.section-note {
+			margin: 4px 0 10px;
+			color: #888;
+			font-size: 12px;
+		}
 		.link-list {
 			display: grid;
 			gap: 10px;
 		}
 		.link-item {
-			border: 1px solid #e5e5df;
-			border-radius: 6px;
-			padding: 10px;
-			background: #fff;
+			border: 1px solid rgba(229, 229, 223, 0.6);
+			border-radius: 12px;
+			padding: 12px;
+			background: rgba(255, 255, 255, 0.5);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
 		}
 		.link-label {
-			font-weight: 700;
-			margin-bottom: 6px;
+			font-weight: 600;
+			margin-bottom: 8px;
+			color: #1a1a1a;
 		}
 		.link-url {
 			display: block;
 			width: 100%;
-			white-space: nowrap;
-			overflow-x: auto;
-			overflow-y: hidden;
-			padding: 7px 8px;
-			border: 1px solid #e5e5df;
-			border-radius: 4px;
-			background: #fafafa;
+			word-wrap: break-word;
+			overflow-wrap: break-word;
+			padding: 10px 10px;
+			border: 1px solid rgba(229, 229, 223, 0.8);
+			border-radius: 8px;
+			background: rgba(250, 250, 250, 0.7);
 			color: #1f4b99;
 			text-decoration: none;
-			-webkit-overflow-scrolling: touch;
+			word-break: break-all;
+			transition: all 0.3s ease;
+		}
+		.link-url:hover {
+			background: rgba(31, 75, 153, 0.05);
+			border-color: #1f4b99;
 		}
 		.actions {
 			display: flex;
 			gap: 8px;
 			flex-wrap: wrap;
-			margin-top: 8px;
+			margin-top: 10px;
 		}
 		button {
-			min-height: 38px;
-			padding: 8px 14px;
-			border: 1px solid #222;
-			border-radius: 6px;
-			background: #222;
+			min-height: 36px;
+			padding: 8px 16px;
+			border: 1px solid rgba(34, 34, 34, 0.2);
+			border-radius: 10px;
+			background: rgba(34, 34, 34, 0.8);
 			color: #fff;
 			font-size: 14px;
 			cursor: pointer;
+			font-weight: 500;
+			transition: all 0.3s ease;
+		}
+		button:hover {
+			background: rgba(34, 34, 34, 0.9);
+			box-shadow: 0 4px 12px rgba(34, 34, 34, 0.15);
 		}
 		button.secondary {
-			background: #fff;
+			background: rgba(255, 255, 255, 0.8);
 			color: #222;
-			border-color: #c8c8c0;
+			border-color: rgba(200, 200, 192, 0.5);
+		}
+		button.secondary:hover {
+			background: rgba(255, 255, 255, 0.95);
+		}
+		button.hidden-btn {
+			background: rgba(34, 34, 34, 0.6);
 		}
 		button:disabled {
 			opacity: 0.65;
@@ -679,24 +708,24 @@ function getToolStyles() {
 		}
 		label {
 			display: block;
-			margin-bottom: 5px;
-			font-weight: 700;
+			margin-bottom: 8px;
+			font-weight: 600;
+			color: #1a1a1a;
 		}
 		input, textarea {
 			width: 100%;
-			border: 1px solid #cfcfc8;
-			border-radius: 6px;
-			background: #fff;
+			border: 1px solid rgba(207, 207, 200, 0.6);
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.8);
 			color: #202124;
 			font-size: 15px;
+			padding: 10px;
 		}
 		input {
 			height: 42px;
-			padding: 8px 10px;
 		}
 		textarea {
 			min-height: 300px;
-			padding: 10px;
 			line-height: 1.5;
 			resize: vertical;
 		}
@@ -720,16 +749,34 @@ function getToolStyles() {
 			text-align: center;
 			color: #fff;
 			background: rgba(0, 0, 0, 0.82);
-			border-radius: 8px;
+			border-radius: 12px;
 			z-index: 9999;
+		}
+		.status-indicator {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 6px 12px;
+			border-radius: 6px;
+			font-size: 13px;
+			margin-top: 8px;
+		}
+		.status-ok {
+			background: rgba(76, 175, 80, 0.1);
+			color: #2e7d32;
+		}
+		.status-error {
+			background: rgba(244, 67, 54, 0.1);
+			color: #c62828;
 		}
 		#current-qrcode {
 			display: none;
-			margin-top: 10px;
-			padding: 10px;
-			border: 1px solid #e5e5df;
-			border-radius: 6px;
-			background: #fff;
+			margin-top: 12px;
+			padding: 12px;
+			border: 1px solid rgba(229, 229, 223, 0.6);
+			border-radius: 12px;
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(10px);
 			width: fit-content;
 			max-width: 100%;
 		}
@@ -758,10 +805,10 @@ function renderLinkList(links) {
 			${links.map(([label, value, displayValue]) => `
 				<div class="link-item">
 					<div class="link-label">${escapeHTML(label)}</div>
-					<a class="link-url" href="${escapeHTML(value)}" data-url="${escapeHTML(value)}">${escapeHTML(displayValue || value)}</a>
+					<a class="link-url" href="${escapeHTML(value)}" target="_blank" rel="noopener noreferrer" data-url="${escapeHTML(value)}">${escapeHTML(displayValue || value)}</a>
 					<div class="actions">
-						<button type="button" onclick="copySubscription(this)" data-url="${escapeHTML(value)}">复制</button>
-						<button type="button" class="secondary" onclick="showQrcode(this)" data-url="${escapeHTML(value)}">二维码</button>
+						<button type="button" class="copy-btn" onclick="copySubscription(this)" data-url="${escapeHTML(value)}">复制</button>
+						<button type="button" class="secondary hide-btn hidden" onclick="hideQrcode(this)">隐藏二维码</button>
 					</div>
 				</div>
 			`).join('')}
@@ -787,6 +834,10 @@ function renderToolScripts(includeEditor = false) {
 			const text = button.dataset.url;
 			navigator.clipboard.writeText(text).then(function () {
 				showToast('已复制到剪贴板');
+				showQrcode(button);
+				button.classList.add('hidden');
+				const hideBtn = button.closest('.actions').querySelector('.hide-btn');
+				if (hideBtn) hideBtn.classList.remove('hidden');
 			}).catch(function (err) {
 				console.error('复制失败:', err);
 				showToast('复制失败，请手动复制');
@@ -811,10 +862,48 @@ function renderToolScripts(includeEditor = false) {
 			});
 		}
 
+		function hideQrcode(button) {
+			const qrcodeDiv = document.getElementById('current-qrcode');
+			qrcodeDiv.style.display = 'none';
+			qrcodeDiv.innerHTML = '';
+			button.classList.add('hidden');
+			const copyBtn = button.closest('.actions').querySelector('.copy-btn');
+			if (copyBtn) copyBtn.classList.remove('hidden');
+		}
+
+		function checkSubapiStatus() {
+			const statusDiv = document.getElementById('subapi-status');
+			if (!statusDiv) return;
+			
+			const subapiUrl = statusDiv.textContent.trim() || '';
+			if (!subapiUrl) return;
+			
+			fetch('https://' + subapiUrl.split('://')[1] + '/version', {
+				method: 'GET',
+				headers: { 'User-Agent': 'CF-Workers-SUB' }
+			}).then(response => {
+				if (response.ok) return response.text();
+				throw new Error('HTTP ' + response.status);
+			}).then(version => {
+				statusDiv.innerHTML = '✅ <span style="color: #2e7d32; font-weight: 500;">正常工作 (' + version.trim() + ')</span>';
+				statusDiv.className = 'status-indicator status-ok';
+			}).catch(error => {
+				statusDiv.innerHTML = '❌ <span style="color: #c62828; font-weight: 500;">不可用</span>';
+				statusDiv.className = 'status-indicator status-error';
+				console.error('SUBAPI状态检测失败:', error);
+			});
+		}
+
 		function togglePanel(id) {
 			const panel = document.getElementById(id);
 			panel.classList.toggle('hidden');
 		}
+
+		// 页面加载完成后检测SUBAPI状态
+		document.addEventListener('DOMContentLoaded', function() {
+			checkSubapiStatus();
+		});
+
 		${includeEditor ? `
 		function replaceFullwidthColon() {
 			const textarea = document.getElementById('content');
@@ -930,7 +1019,7 @@ function renderAdminPage(url, content, hasKV, guest, request) {
 	<!DOCTYPE html>
 	<html>
 		<head>
-			<title>${escapeHTML(FileName)}订阅管理</title>
+			<title>${escapeHTML(FileName)}</title>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
 			<style>${getToolStyles()}</style>
@@ -940,41 +1029,38 @@ function renderAdminPage(url, content, hasKV, guest, request) {
 			<div id="copyNotice" class="toast"></div>
 			<main class="page">
 				<header class="header">
-					<h1 class="title">${escapeHTML(FileName)}订阅管理</h1>
-					<div class="subtitle">复制订阅链接、生成二维码或管理 KV 内容</div>
+					<h1 class="title">${escapeHTML(FileName)}</h1>
+					<div class="subtitle">汇聚订阅控制台</div>
 				</header>
 
 				<section class="panel">
 					<h2 class="section-title">管理员订阅链接</h2>
+					<div class="section-note">点击复制会自动生成二维码，点击隐藏二维码则隐藏</div>
 					${renderLinkList(getSubscriptionLinks(url, mytoken, false))}
 				</section>
 
 				<section class="panel">
 					<h2 class="section-title">访客订阅链接</h2>
+					<div class="section-note">点击复制会自动生成二维码，点击隐藏二维码则隐藏</div>
 					${renderLinkList(getSubscriptionLinks(url, guest, true))}
 				</section>
 
 				<section class="panel">
-					<h2 class="section-title">KV 管理</h2>
-					<div class="actions">
-						<button type="button" onclick="togglePanel('kvPanel')">KV管理入口</button>
-					</div>
-					<div id="kvPanel" class="hidden" style="margin-top: 12px;">
-						${hasKV ? `
-							<textarea id="content" placeholder="${decodeURIComponent(atob('TElOSyVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNCVCOCVBQSVFOCU4QSU4MiVFNyU4MiVCOSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQp2bGVzcyUzQSUyRiUyRjI0NmFhNzk1LTA2MzctNGY0Yy04ZjY0LTJjOGZiMjRjMWJhZCU0MDEyNy4wLjAuMSUzQTEyMzQlM0ZlbmNyeXB0aW9uJTNEbm9uZSUyNnNlY3VyaXR5JTNEdGxzJTI2c25pJTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2YWxsb3dJbnNlY3VyZSUzRDElMjZ0eXBlJTNEd3MlMjZob3N0JTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2cGF0aCUzRCUyNTJGJTI1M0ZlZCUyNTNEMjU2MCUyM0NGbmF0CnRyb2phbiUzQSUyRiUyRmFhNmRkZDJmLWQxY2YtNGE1Mi1iYTFiLTI2NDBjNDFhNzg1NiU0MDIxOC4xOTAuMjMwLjIwNyUzQTQxMjg4JTNGc2VjdXJpdHklM0R0bHMlMjZzbmklM0RoazEyLmJpbGliaWxpLmNvbSUyNmFsbG93SW5zZWN1cmUlM0QxJTI2dHlwZSUzRHRjcCUyNmhlYWRlclR5cGUlM0Rub25lJTIzSEsKc3MlM0ElMkYlMkZZMmhoWTJoaE1qQXRhV1YwWmkxd2IyeDVNVE13TlRveVJYUlFjVzQyU0ZscVZVNWpTRzlvVEdaVmNFWlJkMjVtYWtORFVUVnRhREZ0U21SRlRVTkNkV04xVjFvNVVERjFaR3RTUzBodVZuaDFielUxYXpGTFdIb3lSbTgyYW5KbmRERTRWelkyYjNCMGVURmxOR0p0TVdwNlprTm1RbUklMjUzRCU0MDg0LjE5LjMxLjYzJTNBNTA4NDElMjNERQoKCiVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNiU5RCVBMSVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQpodHRwcyUzQSUyRiUyRnN1Yi54Zi5mcmVlLmhyJTJGYXV0bw=='))}">${escapeHTML(content)}</textarea>
-							<div class="actions">
-								<button type="button" onclick="saveContent(this)">保存</button>
-								<span id="saveStatus" class="muted"></span>
-							</div>
-						` : '<p class="muted">请绑定变量名称为 KV 的 KV 命名空间</p>'}
-					</div>
+					<h2 class="section-title">汇聚订阅编辑</h2>
+					${hasKV ? `
+						<textarea id="content"></textarea>
+						<div class="actions">
+							<button type="button" onclick="saveContent(this)">保存</button>
+							<span id="saveStatus" class="muted"></span>
+						</div>
+					` : '<p class="muted">请绑定变量名称为 KV 的 KV 命名空间</p>'}
 				</section>
 
 				<section class="panel">
 					<h2 class="section-title">订阅转换配置</h2>
-					<div class="muted">SUBAPI: ${escapeHTML(`${subProtocol}://${subConverter}`)}</div>
+					<div id="subapi-status" class="status-indicator"></div>
+					<div class="muted" style="margin-top: 8px;">SUBAPI: ${escapeHTML(`${subProtocol}://${subConverter}`)}</div>
 					<div class="muted">SUBCONFIG: ${escapeHTML(subConfig)}</div>
-					<div class="muted">UA: ${escapeHTML(request.headers.get('User-Agent') || '')}</div>
 				</section>
 				<div id="current-qrcode"></div>
 			</main>
