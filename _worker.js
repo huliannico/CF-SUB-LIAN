@@ -759,7 +759,7 @@ function getToolStyles() {
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 13px;
-            margin-top: 8px;
+            margin-bottom: 12px;
         }
         .status-ok {
             background: rgba(76, 175, 80, 0.1);
@@ -875,12 +875,13 @@ function renderToolScripts(includeEditor = false) {
             const statusDiv = document.getElementById('subapi-status');
             if (!statusDiv) return;
             
-            const subapiUrl = statusDiv.textContent.trim() || '';
+            const subapiUrl = statusDiv.dataset.url;
             if (!subapiUrl) return;
             
-            fetch('https://' + subapiUrl.split('://')[1] + '/version', {
-                method: 'GET',
-                headers: { 'User-Agent': 'CF-Workers-SUB' }
+            statusDiv.innerHTML = '🔄 <span style="color: #666; font-weight: 500;">测试连通性中...</span>';
+            
+            fetch(subapiUrl + '/version', {
+                method: 'GET'
             }).then(response => {
                 if (response.ok) return response.text();
                 throw new Error('HTTP ' + response.status);
@@ -1036,6 +1037,20 @@ function renderGuestPage(url, guest) {
                     <h2 class="section-title">订阅链接</h2>
                     ${renderLinkList(getSubscriptionLinks(url, guest, true))}
                 </section>
+                <section class="panel">
+                    <h2 class="section-title">订阅转换配置</h2>
+                    <div id="subapi-status" class="status-indicator" data-url="${escapeHTML(`${subProtocol}://${subConverter}`)}"></div>
+                    <div class="link-list">
+                        <div class="link-item">
+                            <div class="link-label">SUBAPI 后端地址</div>
+                            <a class="link-url" href="${escapeHTML(`${subProtocol}://${subConverter}`)}" target="_blank" rel="noopener noreferrer">${escapeHTML(`${subProtocol}://${subConverter}`)}</a>
+                        </div>
+                        <div class="link-item">
+                            <div class="link-label">SUBCONFIG 转换规则</div>
+                            <a class="link-url" href="${escapeHTML(subConfig)}" target="_blank" rel="noopener noreferrer">${escapeHTML(subConfig)}</a>
+                        </div>
+                    </div>
+                </section>
                 <div id="current-qrcode"></div>
             </main>
             ${renderToolScripts(false)}
@@ -1088,9 +1103,17 @@ function renderAdminPage(url, content, hasKV, guest, request) {
 
                 <section class="panel">
                     <h2 class="section-title">订阅转换配置</h2>
-                    <div id="subapi-status" class="status-indicator"></div>
-                    <div class="muted" style="margin-top: 8px;">SUBAPI: ${escapeHTML(`${subProtocol}://${subConverter}`)}</div>
-                    <div class="muted">SUBCONFIG: ${escapeHTML(subConfig)}</div>
+                    <div id="subapi-status" class="status-indicator" data-url="${escapeHTML(`${subProtocol}://${subConverter}`)}"></div>
+                    <div class="link-list">
+                        <div class="link-item">
+                            <div class="link-label">SUBAPI 后端地址</div>
+                            <a class="link-url" href="${escapeHTML(`${subProtocol}://${subConverter}`)}" target="_blank" rel="noopener noreferrer">${escapeHTML(`${subProtocol}://${subConverter}`)}</a>
+                        </div>
+                        <div class="link-item">
+                            <div class="link-label">SUBCONFIG 转换规则</div>
+                            <a class="link-url" href="${escapeHTML(subConfig)}" target="_blank" rel="noopener noreferrer">${escapeHTML(subConfig)}</a>
+                        </div>
+                    </div>
                 </section>
                 <div id="current-qrcode"></div>
             </main>
